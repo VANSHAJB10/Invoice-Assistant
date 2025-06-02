@@ -31,10 +31,10 @@ def create_invoice_markdown(file_path: str):
     **Payment Terms:** Net30
 
     ## Services Provided
-    - **Service 1:** Cost of service 1
-    - **Service 2:** Cost of service 2
-    - **Service 3:** Cost of service 3
-    - **Service 4:** Cost of service 4
+    - **Ad Creatives:** 100.00
+    - **SOptimization Consultation:** 1500.0
+    - **Graphics:** 800.00
+    - **Development:** 6000.00
 
     **Note:**
     Please make the payment by the due date. 
@@ -60,7 +60,7 @@ def create_invoice_markdown(file_path: str):
 # passing data as text to the state graph
 
 # Read invoice markdown
-def read_invoice_template(file_path: str) -> str:
+def read_invoice_markdown(file_path: str) -> str:
     with open(file_path, 'r') as file:
         return file.read()
     
@@ -169,4 +169,25 @@ workflow.add_edge("extract_invoice_amount", "extract_profitability_status")
 workflow.add_edge("extract_profitability_status", "summarize")
 workflow.add_edge("summarize", END)
 
+# Compile the graph
 graph = workflow.compile()
+
+# Draw Graph
+try: 
+    graph.get_graph(xray=True).draw_mermaid_png(output_file_path="graph.png")
+except Exception:
+    pass
+
+# Process the invoice
+def process_invoice(invoice_text: str, cost_of_services: float):
+    state = State(text=invoice_text, classification="", entities=[], summary="", cost_of_services = cost_of_services)
+    result = graph.invoke(state)
+    return result
+
+if __name__ == "__main__":
+    invoice_file_path = "./data/invoice.md"
+    create_invoice_markdown(invoice_file_path)
+    invoice_text = read_invoice_markdown(invoice_file_path)
+    cost_of_services = 800 #temporary value
+    result = process_invoice(invoice_text, cost_of_services)
+
