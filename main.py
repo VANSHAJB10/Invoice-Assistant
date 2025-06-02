@@ -1,0 +1,60 @@
+import os
+from typing import List, TypedDict
+from colorama import Fore
+from dotenv import load_dotenv
+
+from langchain.prompts import PromptTemplate
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
+from langgraph.graph import StateGraph, END
+
+import secrets
+from datetime import date
+from datetime import timedelta
+
+load_dotenv()
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = secrets.OPENAI_API_KEY
+
+def create_invoice_markdown(file_path: str):
+    today = date.today().isoformat()
+    number_of_weeks = 2  # Example value, can be adjusted or passed as an argument
+    weekly_due_date = (date.today() + timedelta(days=number_of_weeks * 7)).isoformat()
+
+    invoice_text = f"""
+    # Invoice
+
+    **Client: BossLabs**
+    **Date: {today}**
+    **Due Date: {weekly_due_date}**
+    **Address:** HSR Layout, Bangalore, India
+    **Payment Terms:** Net30
+
+    ## Services Provided
+    - **Service 1:** Description of service 1
+    - **Service 2:** Description of service 2
+    - **Service 3:** Description of service 3
+    - **Service 4:** Description of service 4
+
+    **Note:**
+    Please make the payment by the due date. 
+    If you have any questions regarding this invoice, please contact us at hello@bosslabs.com
+
+    **Bank Details**
+    Bank Name: Example Bank
+    Account Number: 123456789
+    IFSC Code: EXAMPLE123
+
+    **Contact Information**
+    Phone: +91 12345 67890
+    Email: hello@bosslabs.in
+
+    **Thank you for your choosing BossLabs!**
+    ** Copyright © {today[:4]} BossLabs. All rights reserved.**
+    """
+
+    with open(file_path, 'w') as file:
+        file.write(invoice_text)
+    print(Fore.GREEN + f"Invoice created successfully at {file_path}" + Fore.RESET)
+
+    
