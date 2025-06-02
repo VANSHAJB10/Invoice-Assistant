@@ -80,6 +80,7 @@ class State(TypedDict):
 llm = ChatOpenAI(model="gpt-4", temperature=0)
 # no creative liberty to the model.
 
+
 # Extract total due amount
 def node_extract_invoice_amount(state: State):
     prompt = PromptTemplate(
@@ -102,3 +103,40 @@ def node_extract_profitability_status(state: State):
     profit = total_amount_due - cost_of_services
     profitability_status = "Profitable" if profit > 0 else "Loss!"
     state["profitability"] = profitability_status
+
+# Summarize the invoice
+def node_summarize_invoice(state: State):
+    prompt = PromptTemplate(
+        input_variables=["text", "classification", "entities", "cost_of_services", "total_amount_due", "profitability"],
+        template="""
+        Summarize the invoice details.\n
+        Text: {text}\n
+        Classification: {classification}\n
+        Entities: {entities}\n
+        Cost of Services: {cost_of_services}\n
+        Total Amount Due: {total_amount_due}\n
+        Profitability Status: {profitability}
+        
+        Provide a concise summary of the invoice.
+        """
+    )
+
+    message = HumanMessage(content=prompt.format(
+        text=state["text"],
+        classification=state["classification"],
+        entities=", ".join(state["entities"]),
+        cost_of_services=state["cost_of_services"],
+        total_amount_due=state["total_amount_due"],
+        profitability=state["profitability"]
+    ))
+    
+    state["summary"] = llm.invoke([message]).content.strip()
+    return state
+
+# Create a graph 
+workflow = StateGraph(State)
+
+workflow.add_node("extract_invoice_amount", node_extract_invoice_amount)
+workflow.add_node("extract_profitability_status", node_extract_profitability_status)
+workflow.add_node("summarize", node_summarize_invoice)
+
