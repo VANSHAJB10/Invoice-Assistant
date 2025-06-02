@@ -191,3 +191,9 @@ if __name__ == "__main__":
     cost_of_services = 800 #temporary value
     result = process_invoice(invoice_text, cost_of_services)
 
+    print(Fore.WHITE, "Invoice Text:", invoice_text, "\n")
+    print(Fore.YELLOW, "Client Classification:", result["classification"], "\n")
+    print(Fore.GREEN, "Total Amount Due:", result["total_amount_due"], "\n")
+    print(Fore.LIGHTCYAN_EX , "Cost of Services:", cost_of_services, "\n")
+    print(Fore.BLUE, "Profitability:", result["profitability_status"], "\n")
+    print(Fore.MAGENTA, "Summary:", result["summary"], "\n")
