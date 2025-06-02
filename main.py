@@ -80,6 +80,27 @@ class State(TypedDict):
 llm = ChatOpenAI(model="gpt-4", temperature=0)
 # no creative liberty to the model.
 
+# Classify the client based on the invoice total amount
+## helps business if they want to prioritise clients based on the total amount of invoice
+def node_classify_client(state: State):
+    prompt = PromptTemplate(
+        input_variables=["text"],
+        template="""
+        Classify the client tier based on invoice amount into one of the following categories: Low Budget, Mid-Range, Premium.
+        - Low Budget: Invoice amount between 0 to 15,000
+        - Mid-Range: Invoice amount between 15,001 to 45,000
+        - Premium: Invoice amount above 45,000
+        
+        Invoice Info: {text}
+        
+        Category:
+        """
+    )
+
+    message = HumanMessage(content=prompt.format(text=state["text"]))
+    classification = llm.invoke([message]).content.strip()
+    state["classification"] = classification
+    return state
 
 # Extract total due amount
 def node_extract_invoice_amount(state: State):
@@ -136,7 +157,16 @@ def node_summarize_invoice(state: State):
 # Create a graph 
 workflow = StateGraph(State)
 
+workflow.add_node("classify_client", node_classify_client)
 workflow.add_node("extract_invoice_amount", node_extract_invoice_amount)
 workflow.add_node("extract_profitability_status", node_extract_profitability_status)
 workflow.add_node("summarize", node_summarize_invoice)
 
+# Add edges to graph
+workflow.set_entry_point("classify_client")
+workflow.add_edge("classify_client", "extract_invoice_amount")
+workflow.add_edge("extract_invoice_amount", "extract_profitability_status")
+workflow.add_edge("extract_profitability_status", "summarize")
+workflow.add_edge("summarize", END)
+
+graph = workflow.compile()
