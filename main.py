@@ -57,4 +57,40 @@ def create_invoice_markdown(file_path: str):
         file.write(invoice_text)
     print(Fore.GREEN + f"Invoice created successfully at {file_path}" + Fore.RESET)
 
+# passing data as text to the state graph
+
+# Read invoice markdown
+def read_invoice_template(file_path: str) -> str:
+    with open(file_path, 'r') as file:
+        return file.read()
     
+# Define the state graph schema
+## the way the State object is defined, defines the way you keep track of the state as agent executes further steps
+
+class State(TypedDict):
+    text: str #test of invoice
+    classification: str #classification of client
+    entities: List[str] #payment terms , services
+    cost_of_services: float #cost of services
+    total_amount_due: float #total amount to be paid
+    profitability: str #status of profitability of the invoice for the business
+    summary: str 
+
+#Initialize the OpenAI model
+llm = ChatOpenAI(model="gpt-4", temperature=0)
+# no creative liberty to the model.
+
+# Extract total due amount
+def node_extract_invoice_amount(state: State):
+    prompt = PromptTemplate(
+        input_variables=["text"],
+        template="""
+        Extract the total due amount from the invoice text.\n
+        Text: {text}. Return the total amount as  only a number with currency symbols of INR (₹).
+        """
+    )
+
+    message = HumanMessage(content=prompt.format(text=state["text"]))
+    total_amount = llm.invoke([message]).content.strip().split(", ")
+    state["total_amount_due"] = float(total_amount[0].replace(",", ""))
+    return state
