@@ -31,10 +31,10 @@ def create_invoice_markdown(file_path: str):
     **Payment Terms:** Net30
 
     ## Services Provided
-    - **Service 1:** Description of service 1
-    - **Service 2:** Description of service 2
-    - **Service 3:** Description of service 3
-    - **Service 4:** Description of service 4
+    - **Service 1:** Cost of service 1
+    - **Service 2:** Cost of service 2
+    - **Service 3:** Cost of service 3
+    - **Service 4:** Cost of service 4
 
     **Note:**
     Please make the payment by the due date. 
@@ -94,3 +94,11 @@ def node_extract_invoice_amount(state: State):
     total_amount = llm.invoke([message]).content.strip().split(", ")
     state["total_amount_due"] = float(total_amount[0].replace(",", ""))
     return state
+
+# Extract profitability status
+def node_extract_profitability_status(state: State):
+    total_amount_due = state["total_amount_due"]
+    cost_of_services = state["cost_of_services"]
+    profit = total_amount_due - cost_of_services
+    profitability_status = "Profitable" if profit > 0 else "Loss!"
+    state["profitability"] = profitability_status
