@@ -2,8 +2,8 @@
     # Invoice
 
     **Client: BossLabs**
-    **Date: 2025-06-02**
-    **Due Date: 2025-06-16**
+    **Date: 2025-06-08**
+    **Due Date: 2025-06-22**
     **Address:** HSR Layout, Bangalore, India
     **Payment Terms:** Net30
 
