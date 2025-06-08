@@ -5,6 +5,8 @@
 
 # Next Steps:
 - Add custom payment terms for different categories of clients. (Low budget, Mid-Budget, Premium)
+- Develop UI.
 
 # Output (LLM Generated Invoice processing)
-![Invoice Assistant Output](./invoice-assistant-output.png.png)# Invoice-Assistant
+
+![Invoice Assistant Output](./invoice-assistant-output.png.png)
