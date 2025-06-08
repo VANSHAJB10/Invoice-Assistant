@@ -17,9 +17,9 @@ import google.generativeai as genai
 load_dotenv()
 #os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 # OPENAI_API_KEY = OPENAI_API_KEY
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+###################################################### GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 #client = genai.Client(api_key=GEMINI_API_KEY)
-genai.configure(api_key=GEMINI_API_KEY)
+genai.configure(api_key="AIzaSyBKtDEzVJgVXA4fc_LCzrcOYDxeQ8e43mg")
 
 # response = client.models.generate_content(
 #     model="gemini-2.0-flash", contents="Explain how AI works in a few words"
@@ -42,7 +42,7 @@ class GeminiLLM:
         return type("Obj", (object,), {"content": response.text})
 
 llm = GeminiLLM(model="gemini-2.0-flash", temperature=0)
-file_path = "./data"
+
 def create_invoice_markdown(file_path: str):
     today = date.today().isoformat()
     number_of_weeks = 2  # Example value, can be adjusted or passed as an argument
@@ -135,20 +135,29 @@ def node_extract_invoice_amount(state: State):
         input_variables=["text"],
         template="""
         Extract the total due amount from the invoice text.\n
-        Text: {text}. Return the total amount as  only a number with currency symbols of INR (₹).
+        Text: {text}. Return the total amount as only a number with nothing else other than numbers.
         """
     )
 
     message = HumanMessage(content=prompt.format(text=state["text"]))
     total_amount = llm.invoke([message]).content.strip().split(", ")
-    state["total_amount_due"] = float(total_amount[0].replace(",", ""))
+    # Convert to float, then add INR symbol in front of the float value and add to state
+    amount_float = float(total_amount[0].replace(",", ""))
+    state["total_amount_due"] = f"₹{amount_float:.2f}"
     return state
 
 # Extract profitability status
 def node_extract_profitability_status(state: State):
     total_amount_due = state["total_amount_due"]
     cost_of_services = state["cost_of_services"]
-    profit = total_amount_due - cost_of_services
+    # Convert total_amount_due to float (remove currency symbol if present)
+    if isinstance(total_amount_due, str):
+        total_amount_due_float = float(total_amount_due.replace("₹", "").replace(",", "").strip())
+    else:
+        total_amount_due_float = float(total_amount_due)
+
+    cost_of_services_float = float(cost_of_services)
+    profit = total_amount_due_float - cost_of_services_float
     profitability_status = "Profitable" if profit > 0 else "Loss!"
     state["profitability"] = profitability_status
 
