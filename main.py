@@ -4,18 +4,45 @@ from colorama import Fore
 from dotenv import load_dotenv
 
 from langchain.prompts import PromptTemplate
-from langchain_openai import ChatOpenAI
+# from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage
 from langgraph.graph import StateGraph, END
 
-import secrets
+from secrets import  GEMINI_API_KEY
 from datetime import date
 from datetime import timedelta
+# from google import genai
+import google.generativeai as genai
 
 load_dotenv()
-os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
-OPENAI_API_KEY = secrets.OPENAI_API_KEY
+#os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+# OPENAI_API_KEY = OPENAI_API_KEY
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+#client = genai.Client(api_key=GEMINI_API_KEY)
+genai.configure(api_key=GEMINI_API_KEY)
 
+# response = client.models.generate_content(
+#     model="gemini-2.0-flash", contents="Explain how AI works in a few words"
+# )
+print("🚩DEBUG: Response from Gemini API:")
+# print(response.text)
+
+class GeminiLLM:
+    def __init__(self, model="gemini-2.0-flash", temperature=0):
+        self.model = model
+        self.temperature = temperature
+
+    def invoke(self, messages):
+        prompt = messages[0].content if messages else ""
+        model = genai.GenerativeModel(self.model)
+        response = model.generate_content(
+            prompt,
+            generation_config={"temperature": self.temperature}
+        )
+        return type("Obj", (object,), {"content": response.text})
+
+llm = GeminiLLM(model="gemini-2.0-flash", temperature=0)
+file_path = "./data"
 def create_invoice_markdown(file_path: str):
     today = date.today().isoformat()
     number_of_weeks = 2  # Example value, can be adjusted or passed as an argument
@@ -77,7 +104,7 @@ class State(TypedDict):
     summary: str 
 
 #Initialize the OpenAI model
-llm = ChatOpenAI(model="gpt-4", temperature=0)
+# llm = ChatOpenAI(model="gpt-4", temperature=0)
 # no creative liberty to the model.
 
 # Classify the client based on the invoice total amount
