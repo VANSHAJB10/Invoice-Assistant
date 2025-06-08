@@ -216,7 +216,14 @@ except Exception:
 
 # Process the invoice
 def process_invoice(invoice_text: str, cost_of_services: float):
-    state = State(text=invoice_text, classification="", entities=[], summary="", cost_of_services = cost_of_services)
+    state = State(
+        text=invoice_text, classification="", 
+        entities=[], 
+        summary="", 
+        cost_of_services = cost_of_services,
+        total_amount_due=0.0,
+        profitability=""
+        )
     result = graph.invoke(state)
     return result
 
