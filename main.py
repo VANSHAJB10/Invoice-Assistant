@@ -238,5 +238,5 @@ if __name__ == "__main__":
     print(Fore.YELLOW, "Client Classification:", result["classification"], "\n")
     print(Fore.GREEN, "Total Amount Due:", result["total_amount_due"], "\n")
     print(Fore.LIGHTCYAN_EX , "Cost of Services:", cost_of_services, "\n")
-    print(Fore.BLUE, "Profitability:", result["profitability_status"], "\n")
+    print(Fore.BLUE, "Profitability:", result["profitability"], "\n")
     print(Fore.MAGENTA, "Summary:", result["summary"], "\n")
