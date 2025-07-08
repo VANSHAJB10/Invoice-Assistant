@@ -8,7 +8,9 @@ from langchain.prompts import PromptTemplate
 from langchain.schema import HumanMessage
 from langgraph.graph import StateGraph, END
 
-from secrets import  GEMINI_API_KEY
+# ***\/\/\/\/\/*** FOR TESTING UNCOMMENT THIS ***\/\/\/\/\/*** #
+# from secrets import  GEMINI_API_KEY
+
 from datetime import date
 from datetime import timedelta
 # from google import genai
@@ -19,6 +21,7 @@ load_dotenv()
 # OPENAI_API_KEY = OPENAI_API_KEY
 ###################################################### GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 #client = genai.Client(api_key=GEMINI_API_KEY)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=GEMINI_API_KEY)
 
 # response = client.models.generate_content(
