@@ -46,10 +46,34 @@ class GeminiLLM:
 
 llm = GeminiLLM(model="gemini-2.0-flash", temperature=0)
 
+def get_user_selected_services(services: dict) -> dict:
+    print("Available services:")
+    for idx, (service, price) in enumerate(services.items(), 1):
+        print(f"{idx}. {service} - ₹{price:.2f}")
+    selected_indices = input("Enter the 'numbers' of the services to include (comma-separated, e.g., 1,3): ")
+    selected_indices = [int(i.strip()) for i in selected_indices.split(",") if i.strip().isdigit()]
+    selected_services = {list(services.keys())[i-1]: list(services.values())[i-1] for i in selected_indices if 0 < i <= len(services)}
+    return selected_services
+
+
 def create_invoice_markdown(file_path: str):
     today = date.today().isoformat()
     number_of_weeks = 2  # Example value, can be adjusted or passed as an argument
     weekly_due_date = (date.today() + timedelta(days=number_of_weeks * 7)).isoformat()
+
+    # Available services and their prices
+    services = {
+        "Ad Creatives": 100.00,
+        "SEO Optimization Consultation": 1500.00,
+        "Graphics": 800.00,
+        "Development": 12000.00
+
+        # Add more services as needed in format - "Service Name": price
+    }
+
+    selected_services = get_user_selected_services(services)
+
+    services_md = "\n".join([f"- **{name}:** {price:.2f}" for name, price in selected_services.items()])
 
     invoice_text = f"""
     # Invoice
@@ -61,10 +85,7 @@ def create_invoice_markdown(file_path: str):
     **Payment Terms:** Net30
 
     ## Services Provided
-    - **Ad Creatives:** 100.00
-    - **SOptimization Consultation:** 1500.0
-    - **Graphics:** 800.00
-    - **Development:** 6000.00
+    {services_md}
 
     **Note:**
     Please make the payment by the due date. 
