@@ -54,7 +54,25 @@ def get_user_selected_services(services: dict) -> dict:
     selected_indices = [int(i.strip()) for i in selected_indices.split(",") if i.strip().isdigit()]
     selected_services = {list(services.keys())[i-1]: list(services.values())[i-1] for i in selected_indices if 0 < i <= len(services)}
     return selected_services
-
+def get_payment_terms(classification: str) -> str:
+    terms = {
+        "Low Budget": [
+            "1. Advance payment of 60% of total amount.",
+            "2. UPI, Bank transfer accepted.",
+            "3. Balance amount to be paid after the final demo and before the final delivery."
+        ],
+        "Mid-Range": [
+            "1. Advance payment of 45% of total amount.",
+            "2. UPI, Bank transfer accepted.",
+            "3. Balance amount to be paid after the final demo and before the final delivery."
+        ],
+        "Premium": [
+            "1. Advance payment of 30% of total amount.",
+            "2. UPI, Bank transfer accepted.",
+            "3. Balance amount to be paid after the final demo and before the final delivery."
+        ]
+    }
+    return "\n".join(terms.get(classification, []))
 
 def create_invoice_markdown(file_path: str):
     today = date.today().isoformat()
@@ -72,7 +90,17 @@ def create_invoice_markdown(file_path: str):
     }
 
     selected_services = get_user_selected_services(services)
+    total_amount = sum(selected_services.values())
 
+    if total_amount <= 15000:
+        classification = "Low Budget"
+    elif 15001 <= total_amount <= 45000:
+        classification = "Mid-Range"
+    else:
+        classification = "Premium"
+
+    payment_terms_md = get_payment_terms(classification)
+    
     services_md = "\n".join([f"- **{name}:** {price:.2f}" for name, price in selected_services.items()])
 
     invoice_text = f"""
@@ -82,10 +110,12 @@ def create_invoice_markdown(file_path: str):
     **Date: {today}**
     **Due Date: {weekly_due_date}**
     **Address:** HSR Layout, Bangalore, India
-    **Payment Terms:** Net30
 
     ## Services Provided
     {services_md}
+
+    ## Payment Terms
+    {payment_terms_md}
 
     **Note:**
     Please make the payment by the due date. 
