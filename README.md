@@ -4,8 +4,8 @@
 - Modified States in Graph
 
 # Next Steps:
-- Add custom payment terms for different categories of clients. (Low budget, Mid-Budget, Premium)
-- Develop UI.
+- ✅ Add custom payment terms for different categories of clients. (Low budget, Mid-Budget, Premium)
+- 👨‍💻 Develop UI.
 
 # Output (LLM Generated Invoice processing)
 
