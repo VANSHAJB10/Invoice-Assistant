@@ -1,26 +1,27 @@
 
     # Invoice
 
-    **Client: BossLabs**
-    **Date: 2025-06-08**
-    **Due Date: 2025-06-22**
+    **Client: Client Name**
+    **Date: 2025-07-20**
+    **Due Date: 2025-08-03**
     **Address:** HSR Layout, Bangalore, India
-    **Payment Terms:** Net30
 
     ## Services Provided
-    - **Ad Creatives:** 100.00
-    - **SOptimization Consultation:** 1500.0
     - **Graphics:** 800.00
-    - **Development:** 6000.00
+
+    ## Payment Terms
+    1. Advance payment of 60% of total amount.
+2. UPI, Bank transfer accepted.
+3. Balance amount to be paid after the final demo and before the final delivery.
 
     **Note:**
     Please make the payment by the due date. 
     If you have any questions regarding this invoice, please contact us at hello@bosslabs.com
 
     **Bank Details**
-    Bank Name: Example Bank
-    Account Number: 123456789
-    IFSC Code: EXAMPLE123
+    - **Bank Name:** Example Bank
+- **Account Number:** 123456789
+- **IFSC Code:** EXAMPLE123
 
     **Contact Information**
     Phone: +91 12345 67890
