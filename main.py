@@ -4,35 +4,30 @@ from colorama import Fore
 from dotenv import load_dotenv
 
 from langchain.prompts import PromptTemplate
-# from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage
 from langgraph.graph import StateGraph, END
+# from langchain_openai import ChatOpenAI
 
-# ***\/\/\/\/\/*** FOR TESTING UNCOMMENT THIS ***\/\/\/\/\/*** #
-from secrets import GEMINI_API_KEY
+# ***\/\/\/\/\/*** UNCOMMENT FOR TESTING  ***\/\/\/\/\/*** #
+#from secrets import GEMINI_API_KEY
 
 from datetime import date
 from datetime import timedelta
-# from google import genai
 import google.generativeai as genai
 
 load_dotenv()
+
+######################## OPEN AI KEY Code Block ###############################
 #os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 # OPENAI_API_KEY = OPENAI_API_KEY
-###################################################### GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-#client = genai.Client(api_key=GEMINI_API_KEY)
+######################## OPEN AI KEY Code Block End ###########################
 
 #### ***\/\/\/\/\/*** UNCOMMENT FOR PUSHING to PROD ***\/\/\/\/\/*** #
-# GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-#### ***/\/\/\/\*** UNCOMMENT FOR PUSHING to PROD ***/\/\/\/\*** #
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 genai.configure(api_key=GEMINI_API_KEY)
 
-# response = client.models.generate_content(
-#     model="gemini-2.0-flash", contents="Explain how AI works in a few words"
-# )
 print("🚩DEBUG: Response from Gemini API:")
-# print(response.text)
 
 class GeminiLLM:
     def __init__(self, model="gemini-2.0-flash", temperature=0):
@@ -58,7 +53,11 @@ def get_user_selected_services(services: dict) -> dict:
     selected_indices = [int(i.strip()) for i in selected_indices.split(",") if i.strip().isdigit()]
     selected_services = {list(services.keys())[i-1]: list(services.values())[i-1] for i in selected_indices if 0 < i <= len(services)}
     return selected_services
+
+# Payment terms based on client classification
 def get_payment_terms(classification: str) -> str:
+
+    ################################### Payment Terms based on classification ###################################
     terms = {
         "Low Budget": [
             "1. Advance payment of 60% of total amount.",
@@ -83,7 +82,7 @@ def create_invoice_markdown(file_path: str):
     number_of_weeks = 2  # Example value, can be adjusted or passed as an argument
     weekly_due_date = (date.today() + timedelta(days=number_of_weeks * 7)).isoformat()
 
-    # Available services and their prices
+    ################### Available services and their prices ###################
     services = {
         "Ad Creatives": 100.00,
         "SEO Optimization Consultation": 1500.00,
@@ -96,19 +95,20 @@ def create_invoice_markdown(file_path: str):
     selected_services = get_user_selected_services(services)
     total_amount = sum(selected_services.values())
 
+    ########################### Classify client based on total amount ###########################
     if total_amount <= 15000:
         classification = "Low Budget"
     elif 15001 <= total_amount <= 45000:
         classification = "Mid-Range"
     else:
         classification = "Premium"
-
     payment_terms_md = get_payment_terms(classification)
-    
+
+    ############################ Inputs for Invocie Markdown ###########################
     client_name = input("Enter the client's name: ").strip() or "Client Name"
     services_md = "\n".join([f"- **{name}:** {price:.2f}" for name, price in selected_services.items()])
 
-    # Bank details
+    ##################################### Bank details #####################################
     print("Please enter your bank details for payment OR Press ENTER to use default values.")
     bank_name = input("Enter Bank Name OR Press ENTER for default: ").strip() or "Example Bank"
     account_number = input("Enter Account Number OR Press ENTER for default: ").strip() or "123456789"
@@ -121,7 +121,7 @@ def create_invoice_markdown(file_path: str):
     }
     bank_details_md = "\n".join([f"- **{key}:** {value}" for key, value in bank_details.items()])
 
-
+    ###################### Create the invoice markdown text ######################
     invoice_text = f"""
     # Invoice
 
@@ -155,7 +155,7 @@ def create_invoice_markdown(file_path: str):
         file.write(invoice_text)
     print(Fore.GREEN + f"Invoice created successfully at {file_path}" + Fore.RESET)
 
-# passing data as text to the state graph
+################################## passing data as text to the state graph ##################################
 
 # Read invoice markdown
 def read_invoice_markdown(file_path: str) -> str:
@@ -173,10 +173,6 @@ class State(TypedDict):
     total_amount_due: float #total amount to be paid
     profitability: str #status of profitability of the invoice for the business
     summary: str 
-
-#Initialize the OpenAI model
-# llm = ChatOpenAI(model="gpt-4", temperature=0)
-# no creative liberty to the model.
 
 # Classify the client based on the invoice total amount
 ## helps business if they want to prioritise clients based on the total amount of invoice
@@ -212,6 +208,7 @@ def node_extract_invoice_amount(state: State):
 
     message = HumanMessage(content=prompt.format(text=state["text"]))
     total_amount = llm.invoke([message]).content.strip().split(", ")
+
     # Convert to float, then add INR symbol in front of the float value and add to state
     amount_float = float(total_amount[0].replace(",", ""))
     state["total_amount_due"] = f"₹{amount_float:.2f}"
@@ -221,6 +218,7 @@ def node_extract_invoice_amount(state: State):
 def node_extract_profitability_status(state: State):
     total_amount_due = state["total_amount_due"]
     cost_of_services = state["cost_of_services"]
+
     # Convert total_amount_due to float (remove currency symbol if present)
     if isinstance(total_amount_due, str):
         total_amount_due_float = float(total_amount_due.replace("₹", "").replace(",", "").strip())
