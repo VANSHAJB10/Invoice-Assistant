@@ -9,7 +9,7 @@ from langchain.schema import HumanMessage
 from langgraph.graph import StateGraph, END
 
 # ***\/\/\/\/\/*** FOR TESTING UNCOMMENT THIS ***\/\/\/\/\/*** #
-# from secrets import  GEMINI_API_KEY
+from secrets import GEMINI_API_KEY
 
 from datetime import date
 from datetime import timedelta
@@ -21,7 +21,11 @@ load_dotenv()
 # OPENAI_API_KEY = OPENAI_API_KEY
 ###################################################### GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 #client = genai.Client(api_key=GEMINI_API_KEY)
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+#### ***\/\/\/\/\/*** UNCOMMENT FOR PUSHING to PROD ***\/\/\/\/\/*** #
+# GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+#### ***/\/\/\/\*** UNCOMMENT FOR PUSHING to PROD ***/\/\/\/\*** #
+
 genai.configure(api_key=GEMINI_API_KEY)
 
 # response = client.models.generate_content(
@@ -101,12 +105,27 @@ def create_invoice_markdown(file_path: str):
 
     payment_terms_md = get_payment_terms(classification)
     
+    client_name = input("Enter the client's name: ").strip() or "Client Name"
     services_md = "\n".join([f"- **{name}:** {price:.2f}" for name, price in selected_services.items()])
+
+    # Bank details
+    print("Please enter your bank details for payment OR Press ENTER to use default values.")
+    bank_name = input("Enter Bank Name OR Press ENTER for default: ").strip() or "Example Bank"
+    account_number = input("Enter Account Number OR Press ENTER for default: ").strip() or "123456789"
+    ifsc_code = input("Enter IFSC Code OR Press ENTER for default: ").strip() or "EXAMPLE123"
+    
+    bank_details = {
+        "Bank Name": bank_name,
+        "Account Number": account_number,
+        "IFSC Code": ifsc_code
+    }
+    bank_details_md = "\n".join([f"- **{key}:** {value}" for key, value in bank_details.items()])
+
 
     invoice_text = f"""
     # Invoice
 
-    **Client: BossLabs**
+    **Client: {client_name}**
     **Date: {today}**
     **Due Date: {weekly_due_date}**
     **Address:** HSR Layout, Bangalore, India
@@ -122,9 +141,7 @@ def create_invoice_markdown(file_path: str):
     If you have any questions regarding this invoice, please contact us at hello@bosslabs.com
 
     **Bank Details**
-    Bank Name: Example Bank
-    Account Number: 123456789
-    IFSC Code: EXAMPLE123
+    {bank_details_md}
 
     **Contact Information**
     Phone: +91 12345 67890
@@ -226,7 +243,7 @@ def node_summarize_invoice(state: State):
         Entities: {entities}\n
         Cost of Services: {cost_of_services}\n
         Total Amount Due: {total_amount_due}\n
-        Profitability Status: {profitability}
+        Profitability Status: {profitability}\n
         
         Provide a concise summary of the invoice.
         """
