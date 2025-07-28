@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8f9fa; }
+        .container { max-width: 600px; margin-top: 2rem; }
+        .card { border-radius: 1rem; }
+        .section-title { font-weight: 600; margin-top: 1.5rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card shadow p-4">
+        <h2 class="mb-3 text-center">Invoice</h2>
+        <div><strong>Client:</strong> {{ client_name }}</div>
+        <div><strong>Date:</strong> {{ today }}</div>
+        <div><strong>Due Date:</strong> {{ due_date }}</div>
+        <div><strong>Address:</strong> HSR Layout, Bangalore, India</div>
+        <div class="section-title">Services Provided</div>
+        <ul>
+            {% for name, price in services.items() %}
+            <li><strong>{{ name }}:</strong> ₹{{ '%.2f'|format(price) }}</li>
+            {% endfor %}
+        </ul>
+        <div class="mb-2"><strong>Total Amount:</strong> ₹{{ '%.2f'|format(total_amount) }}</div>
+        <div class="section-title">Payment Terms</div>
+        <ul>
+            {% for term in terms %}
+            <li>{{ term }}</li>
+            {% endfor %}
+        </ul>
+        <div class="section-title">Bank Details</div>
+        <ul>
+            <li><strong>Bank Name:</strong> {{ bank_name }}</li>
+            <li><strong>Account Number:</strong> {{ account_number }}</li>
+            <li><strong>IFSC Code:</strong> {{ ifsc_code }}</li>
+        </ul>
+        <div class="section-title">Contact Information</div>
+        <div>Phone: +91 12345 67890</div>
+        <div>Email: hello@bosslabs.in</div>
+        <div class="text-center mt-4">
+            <em>Thank you for choosing BossLabs!</em><br>
+            <small>&copy; {{ today[:4] }} BossLabs. All rights reserved.</small>
+        </div>
+    </div>
+</div>
+</body>
+</html>
