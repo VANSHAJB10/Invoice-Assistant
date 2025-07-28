@@ -2,12 +2,12 @@
     # Invoice
 
     **Client: Client Name**
-    **Date: 2025-07-20**
-    **Due Date: 2025-08-03**
+    **Date: 2025-07-28**
+    **Due Date: 2025-08-11**
     **Address:** HSR Layout, Bangalore, India
 
     ## Services Provided
-    - **Graphics:** 800.00
+    - **SEO Optimization Consultation:** 1500.00
 
     ## Payment Terms
     1. Advance payment of 60% of total amount.
