@@ -3,9 +3,15 @@
 - LLM changed to gemini-2.0-flash
 - Modified States in Graph
 
+# Dependenie/Packages required:
+## FOr UI
+- streamlit
+- markdown2
+- pdfkit
+
 # Next Steps:
 - ✅ Add custom payment terms for different categories of clients. (Low budget, Mid-Budget, Premium)
-- 👨‍💻 Develop UI.
+- 👨‍💻 Develop UI 
 
 # Output (LLM Generated Invoice processing)
 
