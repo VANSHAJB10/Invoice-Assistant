@@ -1,4 +1,5 @@
 # Invoice-Assistant V2
+# ⚠ Dockerfile not working as expected
 
 - LLM changed to gemini-2.0-flash
 - Modified States in Graph
