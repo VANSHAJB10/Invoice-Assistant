@@ -3,3 +3,11 @@ markdown2
 pdfkit
 python-dotenv
 google-generativeai
+colorama
+dotenv
+# langchain.prompts 
+# langchain.schema 
+# langgraph.graph 
+datetime
+langchain
+langgraph
